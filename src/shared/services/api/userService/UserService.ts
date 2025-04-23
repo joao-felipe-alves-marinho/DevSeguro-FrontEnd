@@ -9,14 +9,14 @@ export const getMe = async () => {
 };
 
 export const updateMe = async (payload: TUpdateUser) => {
-  const response = await Api.patch('/me/pessoa', payload);
+  const response = await Api.patch('/me', payload);
 
   const data: TUser = response.data;
   return data;
 };
 
 export const deleteMe = async () => {
-  await Api.delete('/me/pessoa');
+  await Api.delete('/me');
 };
 
 export const getPostsMe = async () => {

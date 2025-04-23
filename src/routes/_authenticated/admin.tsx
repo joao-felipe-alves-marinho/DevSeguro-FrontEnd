@@ -11,5 +11,5 @@ export const Route = createFileRoute('/_authenticated/admin')({
 
 
 function RouteComponent() {
-  return <div>WIP! YOU ARE A ADMIN</div>;
+  return <div>Only Admin Route</div>;
 }

@@ -1,11 +1,26 @@
-import { AppBar, Box, Container, Stack } from '@mui/material';
-import { Outlet } from '@tanstack/react-router';
+import { AppBar, Box, Button, Container, Stack } from '@mui/material';
+import { Outlet, useNavigate, useRouteContext } from '@tanstack/react-router';
 import { CustomButton } from '../components';
-import { useUser } from '../queries/authQueries/AuthQueries';
+import { useLogout } from '../queries/authQueries/AuthQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 export const BaseLayout = () => {
-  const user = useUser().data;
+  const context = useRouteContext({ from: '__root__'});
+  const user = context.user;
+  const logout = useLogout();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout.mutate({
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
+      }
+    });
+  };
+
+  logout.isSuccess && navigate({ to: '/login' });
 
   return (
     <Stack gap={2}>
@@ -25,13 +40,32 @@ export const BaseLayout = () => {
               >
                 Home
               </CustomButton>
-              <CustomButton
-                to='/perfil'
-                sx={{ color: 'white' }}
-                variant='outlined'
-              >
-                Perfil
-              </CustomButton>
+              {user ? (
+                <CustomButton
+                  to='/profile'
+                  sx={{ color: 'white' }}
+                  variant='outlined'
+                >
+                  Profile
+                </CustomButton>
+              ) : (
+                <CustomButton
+                  to='/login'
+                  sx={{ color: 'white' }}
+                  variant='outlined'
+                >
+                  Login
+                </CustomButton>
+              )}
+              {user && (
+                <Button
+                  sx={{ color: 'white' }}
+                  variant='outlined'
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              )}
               {user?.is_superuser && (
                 <CustomButton
                   to='/admin'

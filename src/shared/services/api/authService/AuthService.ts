@@ -36,7 +36,7 @@ export const refreshToken = async (payload: { refresh: string }) => {
   return data.access;
 };
 
-export const removeAccessToken = () => {
+export const removeToken = () => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');

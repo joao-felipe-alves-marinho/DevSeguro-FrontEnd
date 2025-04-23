@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { refreshToken, removeAccessToken } from './authService/AuthService';
+import { refreshToken, removeToken } from './authService/AuthService';
 
 interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
   _retry?: boolean;
@@ -52,6 +52,10 @@ Api.interceptors.response.use(
   async (error: AxiosError): Promise<any> => {
     const originalRequest = error.config as AxiosRequestConfigWithRetry;
 
+    if (originalRequest.url?.includes('/auth/refresh')) {
+      removeToken();
+      return Promise.reject(error);
+    }
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise<string>((resolve, reject) => {
@@ -83,7 +87,7 @@ Api.interceptors.response.use(
             resolve(Api(originalRequest));
           } catch (err) {
             processQueue(err, null);
-            removeAccessToken();
+            removeToken();
             reject(err);
           } finally {
             isRefreshing = false;

@@ -11,16 +11,22 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as HomeImport } from './routes/home'
 import { Route as NotAuthenticatedImport } from './routes/_not-authenticated'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as SplatImport } from './routes/$'
 import { Route as NotAuthenticatedRegisterImport } from './routes/_not-authenticated/register'
 import { Route as NotAuthenticatedLoginImport } from './routes/_not-authenticated/login'
-import { Route as AuthenticatedPerfilImport } from './routes/_authenticated/perfil'
-import { Route as AuthenticatedHomeImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedProfileImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedAdminImport } from './routes/_authenticated/admin'
 
 // Create/Update Routes
+
+const HomeRoute = HomeImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const NotAuthenticatedRoute = NotAuthenticatedImport.update({
   id: '/_not-authenticated',
@@ -50,15 +56,9 @@ const NotAuthenticatedLoginRoute = NotAuthenticatedLoginImport.update({
   getParentRoute: () => NotAuthenticatedRoute,
 } as any)
 
-const AuthenticatedPerfilRoute = AuthenticatedPerfilImport.update({
-  id: '/perfil',
-  path: '/perfil',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-
-const AuthenticatedHomeRoute = AuthenticatedHomeImport.update({
-  id: '/home',
-  path: '/home',
+const AuthenticatedProfileRoute = AuthenticatedProfileImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
@@ -93,6 +93,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotAuthenticatedImport
       parentRoute: typeof rootRoute
     }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeImport
+      parentRoute: typeof rootRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -100,18 +107,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminImport
       parentRoute: typeof AuthenticatedImport
     }
-    '/_authenticated/home': {
-      id: '/_authenticated/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof AuthenticatedHomeImport
-      parentRoute: typeof AuthenticatedImport
-    }
-    '/_authenticated/perfil': {
-      id: '/_authenticated/perfil'
-      path: '/perfil'
-      fullPath: '/perfil'
-      preLoaderRoute: typeof AuthenticatedPerfilImport
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileImport
       parentRoute: typeof AuthenticatedImport
     }
     '/_not-authenticated/login': {
@@ -135,14 +135,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
-  AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
-  AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -165,9 +163,9 @@ const NotAuthenticatedRouteWithChildren =
 export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '': typeof NotAuthenticatedRouteWithChildren
+  '/home': typeof HomeRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/home': typeof AuthenticatedHomeRoute
-  '/perfil': typeof AuthenticatedPerfilRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/login': typeof NotAuthenticatedLoginRoute
   '/register': typeof NotAuthenticatedRegisterRoute
 }
@@ -175,9 +173,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '': typeof NotAuthenticatedRouteWithChildren
+  '/home': typeof HomeRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/home': typeof AuthenticatedHomeRoute
-  '/perfil': typeof AuthenticatedPerfilRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/login': typeof NotAuthenticatedLoginRoute
   '/register': typeof NotAuthenticatedRegisterRoute
 }
@@ -187,26 +185,33 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_not-authenticated': typeof NotAuthenticatedRouteWithChildren
+  '/home': typeof HomeRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/_authenticated/home': typeof AuthenticatedHomeRoute
-  '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_not-authenticated/login': typeof NotAuthenticatedLoginRoute
   '/_not-authenticated/register': typeof NotAuthenticatedRegisterRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/$' | '' | '/admin' | '/home' | '/perfil' | '/login' | '/register'
+  fullPaths:
+    | '/$'
+    | ''
+    | '/home'
+    | '/admin'
+    | '/profile'
+    | '/login'
+    | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$' | '' | '/admin' | '/home' | '/perfil' | '/login' | '/register'
+  to: '/$' | '' | '/home' | '/admin' | '/profile' | '/login' | '/register'
   id:
     | '__root__'
     | '/$'
     | '/_authenticated'
     | '/_not-authenticated'
+    | '/home'
     | '/_authenticated/admin'
-    | '/_authenticated/home'
-    | '/_authenticated/perfil'
+    | '/_authenticated/profile'
     | '/_not-authenticated/login'
     | '/_not-authenticated/register'
   fileRoutesById: FileRoutesById
@@ -216,12 +221,14 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   NotAuthenticatedRoute: typeof NotAuthenticatedRouteWithChildren
+  HomeRoute: typeof HomeRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   NotAuthenticatedRoute: NotAuthenticatedRouteWithChildren,
+  HomeRoute: HomeRoute,
 }
 
 export const routeTree = rootRoute
@@ -236,7 +243,8 @@ export const routeTree = rootRoute
       "children": [
         "/$",
         "/_authenticated",
-        "/_not-authenticated"
+        "/_not-authenticated",
+        "/home"
       ]
     },
     "/$": {
@@ -246,8 +254,7 @@ export const routeTree = rootRoute
       "filePath": "_authenticated.tsx",
       "children": [
         "/_authenticated/admin",
-        "/_authenticated/home",
-        "/_authenticated/perfil"
+        "/_authenticated/profile"
       ]
     },
     "/_not-authenticated": {
@@ -257,16 +264,15 @@ export const routeTree = rootRoute
         "/_not-authenticated/register"
       ]
     },
+    "/home": {
+      "filePath": "home.tsx"
+    },
     "/_authenticated/admin": {
       "filePath": "_authenticated/admin.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/home": {
-      "filePath": "_authenticated/home.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/perfil": {
-      "filePath": "_authenticated/perfil.tsx",
+    "/_authenticated/profile": {
+      "filePath": "_authenticated/profile.tsx",
       "parent": "/_authenticated"
     },
     "/_not-authenticated/login": {
