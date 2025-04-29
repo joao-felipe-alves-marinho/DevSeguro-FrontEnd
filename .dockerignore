@@ -1,0 +1,12 @@
+# Node modules & build output
+node_modules
+dist
+
+# Local env files (to avoid leaking secrets)
+.env
+.env.*.local
+
+# VCS and metadata
+.git
+.gitignore
+docker-compose*.yml
